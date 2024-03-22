@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    #parse("sys/header.html")
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <Row :gutter="16">
+            <div class="search-group">
+                <i-col span="4">
+                    <i-input v-model="q.name" @on-enter="query" placeholder="小区名称"/>
+                </i-col>
+                <i-button @click="query">查询</i-button>
+            </div>
+            <div class="buttons-group">
+                #if($shiro.hasPermission("brand:save"))
+                <i-button type="info" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</i-button>
+                #end
+                #if($shiro.hasPermission("brand:update"))
+                <i-button type="warning" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</i-button>
+                #end
+                #if($shiro.hasPermission("brand:delete"))
+                <i-button type="error" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</i-button>
+                #end
+            </div>
+        </Row>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <Card v-show="!showList">
+        <p slot="title">{{title}}</p>
+        <i-form ref="formValidate" :model="brand" :rules="ruleValidate" :label-width="100">
+            <Row>
+                <i-col span="5">
+                    <Form-item label="所在地区 省" prop="provinceName" style="width: 268px;">
+                        <i-select v-model="brand.provinceName" @on-change="proNameChange" filterable>
+                            <i-option v-for="provinceName in provinceNames" :value="provinceName.name" :key="provinceName.id">
+                                {{provinceName.name}}
+                            </i-option>
+                        </i-select>
+                    </Form-item>
+                </i-col>
+                <i-col span="5">
+                    <Form-item label="市" prop="cityName" style="width: 268px;">
+                        <i-select v-model="brand.cityName" @on-change="proNameCityChange" filterable>
+                            <i-option v-for="cityName in cityNames" :value="cityName.name" :key="cityName.id">
+                                {{cityName.name}}
+                            </i-option>
+                        </i-select>
+                    </Form-item>
+                </i-col>
+                <i-col span="5">
+                    <Form-item label="区" prop="countyName" style="width: 268px;">
+                        <i-select v-model="brand.countyName" filterable>
+                            <i-option v-for="countyName in countyNames" :value="countyName.name" :key="countyName.id">
+                                {{countyName.name}}
+                            </i-option>
+                        </i-select>
+                    </Form-item>
+                </i-col>
+            </Row>
+            <Form-item label="小区名称" prop="name">
+                <i-input v-model="brand.name" placeholder="小区名称"/>
+            </Form-item>
+            <Form-item label="小区地址" prop="simpleDesc">
+                <i-input type="textarea" v-model="brand.simpleDesc" placeholder="小区地址"/>
+            </Form-item>
+             <Row>
+                 <i-col span="5">
+                     <Form-item label="地图位置" prop="lng">
+                         <i-input v-model="brand.lng" placeholder="经度" />
+                     </Form-item>
+                 </i-col>
+                 <i-col span="5">
+                     <Form-item label="" prop="lat">
+                         <i-input v-model="brand.lat" placeholder="纬度" />
+                     </Form-item>
+                 </i-col>
+                 <i-col span="3">
+                     <Form-item :label-width="1">
+                         <Upload style="width: 300px;" action="../sys/oss/upload" :format="['jpg','jpeg','png']"
+                                 max-size="2048"
+                                 :on-success="handleSuccessPicUrl" :on-format-error="handleFormatError"
+                                 :show-upload-list="false"
+                                 :on-exceeded-size="handleMaxSize">
+                             <i-button icon="ios-cloud-upload-outline">点击选择</i-button>
+                         </Upload>
+                     </Form-item>
+                 </i-col>
+             </Row>
+            <!--<Form-item label="所在地区" prop="sortOrder">-->
+                <!--<Input-number :min="0" :step="1" v-model="brand.sortOrder" placeholder="所在地区" style="width: 188px;"/>-->
+            <!--</Form-item>-->
+
+            <!--<Form-item label="显示" prop="isShow">-->
+                <!--<Radio-group v-model="brand.isShow">-->
+                    <!--<Radio label="1">-->
+                        <!--<span>是</span>-->
+                    <!--</Radio>-->
+                    <!--<Radio label="0">-->
+                        <!--<span>否</span>-->
+                    <!--</Radio>-->
+                <!--</Radio-group>-->
+            <!--</Form-item>-->
+            <!--<Form-item label="展示价格" prop="floorPrice">-->
+                <!--<Input-number :min="0" v-model="brand.floorPrice" placeholder="展示价格" style="width: 188px;"/>-->
+            <!--</Form-item>-->
+            <Row>
+                <i-col span="16">
+                    <Form-item label="小区图片" prop="appListPicUrl">
+                        <i-input v-model="brand.appListPicUrl" placeholder="图片" />
+                    </Form-item>
+                </i-col>
+                <i-col span="3">
+                    <Form-item :label-width="1">
+                        <Upload style="width: 300px;" action="../sys/oss/upload" :format="['jpg','jpeg','png']"
+                                max-size="2048"
+                                :on-success="handleSuccessAppListPicUrl" :on-format-error="handleFormatError"
+                                :show-upload-list="false"
+                                :on-exceeded-size="handleMaxSize">
+                            <i-button icon="ios-cloud-upload-outline">上传图片</i-button>
+                        </Upload>
+                    </Form-item>
+                </i-col>
+                <i-col span="3">
+                    <Form-item :label-width="1">
+                        <i-button icon="eye" @click="eyeImageAppListPicUrl">预览图片</i-button>
+                    </Form-item>
+                </i-col>
+            </Row>
+            <!--<Form-item label="新品牌" prop="isNew">-->
+                <!--<Radio-group v-model="brand.isNew">-->
+                    <!--<Radio label="1">-->
+                        <!--<span>是</span>-->
+                    <!--</Radio>-->
+                    <!--<Radio label="0">-->
+                        <!--<span>否</span>-->
+                    <!--</Radio>-->
+                <!--</Radio-group>-->
+            <!--</Form-item>-->
+            <Row>
+                <i-col span="16">
+                    <Form-item label="客服二维码" prop="newPicUrl">
+                        <i-input v-model="brand.newPicUrl" placeholder="客服二维码" />
+                    </Form-item>
+                </i-col>
+                <i-col span="3">
+                    <Form-item :label-width="1">
+                        <Upload style="width: 300px;" action="../sys/oss/upload" :format="['jpg','jpeg','png']"
+                                max-size="2048"
+                                :on-success="handleSuccessNewPicUrl" :on-format-error="handleFormatError"
+                                :show-upload-list="false"
+                                :on-exceeded-size="handleMaxSize">
+                            <i-button icon="ios-cloud-upload-outline">上传图片</i-button>
+                        </Upload>
+                    </Form-item>
+                </i-col>
+                <i-col span="3">
+                    <Form-item :label-width="1">
+                        <i-button icon="eye" @click="eyeImageNewPicUrl">预览图片</i-button>
+                    </Form-item>
+                </i-col>
+            </Row>
+            <Form-item label="排序" prop="newSortOrder">
+                <Input-number :min="0" :step="1" v-model="brand.newSortOrder" placeholder="排序"
+                              style="width: 188px;"/>
+            </Form-item>
+            <Form-item>
+                <i-button type="primary" @click="handleSubmit('formValidate')">提交</i-button>
+                <i-button type="warning" @click="reload" style="margin-left: 8px"/>
+                返回</i-button>
+                <i-button type="ghost" @click="handleReset('formValidate')" style="margin-left: 8px">重置</i-button>
+            </Form-item>
+        </i-form>
+    </Card>
+</div>
+<div class="common-map-loc">
+    <div id="container">
+    </div>
+</div>
+<script src="${rc.contextPath}/js/shop/brand.js?_${date.systemTime}"></script>
+<script charset="utf-8" src="https://map.qq.com/api/gljs?v=1.exp&key=O5IBZ-JRF6L-X5RPT-EYUF5-PIYAS-3WBBU"></script>
+</body>
+</html>

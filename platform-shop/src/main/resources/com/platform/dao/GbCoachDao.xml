@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.GbCoachDao">
+
+    <resultMap type="com.platform.entity.GbCoachEntity" id="BaseResultMap">
+        <result property="id" column="id"/>
+        <result property="provinceName" column="province_name"/>
+        <result property="cityName" column="city_name"/>
+        <result property="countyName" column="county_name"/>
+        <result property="mobile" column="mobile"/>
+        <result property="name" column="name"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="password" column="password"/>
+        <result property="avatar" column="avatar"/>
+        <result property="levelId" column="level_id"/>
+        <result property="balance" column="balance"/>
+        <result property="weixin" column="weixin"/>
+        <result property="alipay" column="alipay"/>
+        <result property="bankCard" column="bank_card"/>
+        <result property="idCard" column="id_card"/>
+        <result property="address" column="address"/>
+        <result property="idCardFront" column="id_card_front"/>
+        <result property="idCardBack" column="id_card_back"/>
+        <result property="status" column="status"/>
+        <result property="identification" column="identification"/>
+        <result property="pic" column="pic"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List" >
+	    `id`,
+	    `province_name`,
+	    `city_name`,
+	    `county_name`,
+	    `mobile`,
+	    `name`,
+	    `nick_name`,
+	    `password`,
+	    `avatar`,
+	    `level_id`,
+	    `balance`,
+	    `weixin`,
+	    `alipay`,
+	    `bank_card`,
+	    `id_card`,
+	    `address`,
+	    `id_card_front`,
+	    `id_card_back`,
+	    `status`,
+	    `identification`,
+	    `pic`,
+	    `create_time`,
+	    `modify_time`
+  	</sql>
+
+
+    <select id="queryObject" resultType="com.platform.entity.GbCoachEntity" >
+        select
+        <include refid="Base_Column_List" />
+        from gb_coach
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from gb_coach
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from gb_coach where id in
+<foreach item="id" collection="array" open="(" separator="," close=")">
+          #{id}
+</foreach>
+    </delete>
+    <insert id="save" parameterType="com.platform.entity.GbCoachEntity">
+		insert into gb_coach(
+          `id`,
+          `province_name`,
+          `city_name`,
+          `county_name`,
+          `mobile`,
+          `name`,
+          `nick_name`,
+          `password`,
+          `avatar`,
+          `level_id`,
+          `balance`,
+          `weixin`,
+          `alipay`,
+          `bank_card`,
+          `id_card`,
+          `address`,
+          `id_card_front`,
+          `id_card_back`,
+          `status`,
+          `identification`,
+          `pic` ,
+          `create_time`,
+          `modify_time`
+          )
+		values(
+          #{id},
+          #{provinceName},
+          #{cityName},
+          #{countyName},
+          #{mobile},
+          #{name},
+          #{nickName},
+          #{password},
+          #{avatar},
+          #{levelId},
+          #{balance},
+          #{weixin},
+          #{alipay},
+          #{bankCard},
+          #{idCard},
+          #{address},
+          #{idCardFront},
+          #{idCardBack},
+          #{status},
+          #{identification},
+          #{pic},now(),now()         )
+	</insert>
+
+    <update id="update" parameterType="com.platform.entity.GbCoachEntity" >
+        update gb_coach
+        <set>
+            `province_name` = #{provinceName},
+            `city_name` = #{cityName},
+            `county_name` = #{countyName},
+            `mobile` = #{mobile},
+            `name` = #{name},
+            <if test="nickName != null">
+                `nick_name` = #{nickName},
+            </if>
+            <if test="nickName == null">
+                `nick_name`= INSERT(#{mobile},4,4,'****'),
+            </if>
+            `password` = #{password},
+            `avatar` = #{avatar},
+            `level_id`= #{levelId},
+            `balance` = #{balance},
+            `weixin` = #{weixin},
+            `alipay` = #{alipay},
+            `bank_card` = #{bankCard},
+            `id_card` = #{idCard},
+            `address` = #{address},
+            `id_card_front` = #{idCardFront},
+            `id_card_back` = #{idCardBack},
+            `status` = #{status},
+            `identification` = #{identification},
+            `pic` = #{pic},
+            `modify_time` = now()
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+    <select id="queryList" resultType="com.platform.entity.GbCoachEntity">
+        select
+          `id`,
+          `mobile`,
+          `name`,
+          `nick_name`,
+          `avatar`,
+        (select l.name from gb_coach_level l where l.id = g.level_id) level,
+          `balance`,
+          `status`,
+          `identification`,
+        (select CONCAT(u.mobile,'(',merchant_name,')') from sys_user u where u.merchant_id = g.pic) pic,
+        `create_time`
+        from gb_coach g
+        WHERE 1=1
+        <if test="name != null and name.trim() != ''">
+            AND name LIKE concat('%',#{name},'%')
+        </if>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        select count(*) from gb_coach
+        WHERE 1=1
+        <if test="name != null and name.trim() != ''">
+            AND name LIKE concat('%',#{name},'%')
+        </if>
+    </select>
+</mapper>

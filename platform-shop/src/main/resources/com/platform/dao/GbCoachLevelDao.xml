@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.GbCoachLevelDao">
+
+    <resultMap type="com.platform.entity.GbCoachLevelEntity" id="BaseResultMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="fx" column="fx"/>
+        <result property="creatTime" column="creat_time"/>
+        <result property="modifyTime" column="modify_time"/>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+	    `id`,
+	    `name`,
+	    `fx`,
+	    `creat_time`,
+	    `modify_time`
+  	</sql>
+
+
+
+    <select id="queryObject" resultType="com.platform.entity.GbCoachLevelEntity">
+        select
+        <include refid="Base_Column_List" />
+        from gb_coach_level
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from gb_coach_level
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from gb_coach_level where id in
+<foreach item="id" collection="array" open="(" separator="," close=")">
+          #{id}
+</foreach>
+    </delete>
+    <insert id="save" parameterType="com.platform.entity.GbCoachLevelEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into gb_coach_level(
+          `name`,
+          `fx`,
+          `creat_time`,
+          `modify_time`        )
+		values(
+          #{name},
+          #{fx},
+          now(),
+          now()         )
+	</insert>
+
+
+
+    <update id="update" parameterType="com.platform.entity.GbCoachLevelEntity" >
+        update gb_coach_level
+        <set>
+            `name` = #{name},
+            `fx` = #{fx},
+            `modify_time` = now()
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+    <select id="queryList" resultType="com.platform.entity.GbCoachLevelEntity">
+        select
+          `id`,
+          `name`,
+          `fx`,
+          `creat_time`,
+          `modify_time`
+        from gb_coach_level
+        WHERE 1=1
+        <if test="name != null and name.trim() != ''">
+            AND name LIKE concat('%',#{name},'%')
+        </if>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        select count(*) from gb_coach_level
+        WHERE 1=1
+        <if test="name != null and name.trim() != ''">
+            AND name LIKE concat('%',#{name},'%')
+        </if>
+    </select>
+</mapper>
