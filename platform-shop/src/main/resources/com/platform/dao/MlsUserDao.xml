@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.MlsUserDao">
+
+    <resultMap type="com.platform.entity.MlsUserEntity2" id="BaseResultMap">
+        <result property="mlsUserId" column="MLS_USER_ID"/>
+        <result property="userName" column="USER_NAME"/>
+        <result property="nickname" column="NICKNAME"/>
+        <result property="loginName" column="LOGIN_NAME"/>
+        <result property="loginPassword" column="LOGIN_PASSWORD"/>
+        <result property="deviceId" column="DEVICE_ID"/>
+        <result property="userTel" column="USER_TEL"/>
+        <result property="profilePhoto" column="PROFILE_PHOTO"/>
+        <result property="allSales" column="ALL_SALES"/>
+        <result property="todaySales" column="TODAY_SALES"/>
+        <result property="allProfit" column="ALL_PROFIT"/>
+        <result property="getProfit" column="GET_PROFIT"/>
+        <result property="fatherUserId" column="FATHER_USER_ID"/>
+        <result property="sonUserSum" column="SON_USER_SUM"/>
+        <result property="cTime" column="C_TIME"/>
+        <result property="fx" column="FX"/>
+        <result property="fx1" column="FX1"/>
+        <result property="fx2" column="FX2"/>
+        <result property="pfx" column="PFX"/>
+        <result property="merchantId" column="merchant_id"/>
+        <result property="fid" column="FID"/>
+        <result property="rootId" column="ROOT_ID"/>
+        <result property="allShow" column="all_show"/>
+        <result property="userId" column="USER_ID"/>
+    </resultMap>
+
+
+    <sql id="Base_Column_List" >
+	    `MLS_USER_ID`,
+	    `USER_NAME`,
+	    `NICKNAME`,
+	    `LOGIN_NAME`,
+	    `LOGIN_PASSWORD`,
+	    `DEVICE_ID`,
+	    `USER_TEL`,
+	    `PROFILE_PHOTO`,
+	    `ALL_SALES`,
+	    `TODAY_SALES`,
+	    `ALL_PROFIT`,
+	    `GET_PROFIT`,
+	    `FATHER_USER_ID`,
+	    `SON_USER_SUM`,
+	    `C_TIME`,
+	    `FX`,
+	    `FX1`,
+	    `FX2`,
+	    `PFX`,
+	    `merchant_id`,
+	    `FID`,
+	    `ROOT_ID`,
+	    `all_show`,
+	    `USER_ID`
+  	</sql>
+
+
+    <select id="queryObject" resultType="com.platform.entity.MlsUserEntity2" >
+        select
+        <include refid="Base_Column_List" />
+        from mls_user
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from mls_user
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+
+
+
+
+    <update id="updatefx" parameterType="com.platform.entity.MlsUserEntity2" >
+        update mls_user
+        <set>
+            `USER_NAME` = #{userName},
+            `NICKNAME` = #{nickname},
+            `LOGIN_NAME` = #{loginName},
+            `LOGIN_PASSWORD` = #{loginPassword},
+            `DEVICE_ID` = #{deviceId},
+            `USER_TEL` = #{userTel},
+            `PROFILE_PHOTO` = #{profilePhoto},
+            `ALL_SALES` = #{allSales},
+            `TODAY_SALES` = #{todaySales},
+            `ALL_PROFIT` = #{allProfit},
+            `GET_PROFIT` = #{getProfit},
+            `FATHER_USER_ID` = #{fatherUserId},
+            `SON_USER_SUM` = #{sonUserSum},
+            `C_TIME` = #{cTime},
+            `FX` = #{fx},
+            `FX1` = #{fx1},
+            `FX2` = #{fx2},
+            `PFX` = #{pfx},
+            `merchant_id` = #{merchantId},
+            `FID` = #{fid},
+            `ROOT_ID` = #{rootId},
+            `all_show` = #{allShow},
+            `USER_ID` = #{userId}
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+    <select id="queryList" resultType="com.platform.entity.MlsUserEntity2">
+        select
+          `MLS_USER_ID`,
+          `USER_NAME`,
+          `NICKNAME`,
+          `LOGIN_NAME`,
+          `LOGIN_PASSWORD`,
+          `DEVICE_ID`,
+          `USER_TEL`,
+          `PROFILE_PHOTO`,
+          `ALL_SALES`,
+          `TODAY_SALES`,
+          `ALL_PROFIT`,
+          `GET_PROFIT`,
+          `FATHER_USER_ID`,
+          `SON_USER_SUM`,
+          `C_TIME`,
+          `FX`,
+          `FX1`,
+          `FX2`,
+          `PFX`,
+          `merchant_id`,
+          `FID`,
+          `ROOT_ID`,
+          `all_show`,
+          `USER_ID`
+        from mls_user
+        WHERE 1=1
+        <if test="name != null and name.trim() != ''">
+            AND name LIKE concat('%',#{name},'%')
+        </if>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by MLS_USER_ID desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        select count(*) from mls_user
+        WHERE 1=1
+        <if test="name != null and name.trim() != ''">
+            AND name LIKE concat('%',#{name},'%')
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,54 @@
+{
+  "description": "项目配置文件。",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "newFeature": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "ignoreUploadUnusedFiles": false
+  },
+  "compileType": "miniprogram",
+  "libVersion": "2.25.3",
+  "appid": "wxb412c571898b0dc4",
+  "projectname": "hz-mall",
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "选择优惠券",
+          "pathName": "pages/shopping/selCoupon/selCoupon",
+          "query": "isBuy=false"
+        },
+        {
+          "name": "订单界面",
+          "pathName": "pages/shopping/checkout/checkout",
+          "query": "isBuy=true"
+        },
+        {
+          "name": "我的优惠券",
+          "pathName": "pages/ucenter/coupon/coupon",
+          "query": "isBuy=true"
+        },
+        {
+          "name": "我的订单",
+          "pathName": "pages/ucenter/order/order",
+          "query": ""
+        }
+      ]
+    }
+  },
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  }
+}

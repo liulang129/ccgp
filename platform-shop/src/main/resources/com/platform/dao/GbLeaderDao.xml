@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.GbLeaderDao">
+
+    <resultMap type="com.platform.entity.GbLeaderEntity" id="BaseResultMap">
+        <result property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="realname" column="realname"/>
+        <result property="mobile" column="mobile"/>
+        <result property="pic" column="pic"/>
+        <result property="registerTime" column="register_time"/>
+        <result property="modifyTime" column="modify_time"/>
+        <result property="status" column="status"/>
+        <result property="remarks" column="remarks"/>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+	    `id`,
+	    `user_id`,
+	    `realname`,
+	    `mobile`,
+	    `pic`,
+	    `register_time`,
+	    `modify_time`,
+	    `status`,
+	    `remarks`
+  	</sql>
+
+
+
+    <select id="queryObject" resultType="com.platform.entity.GbLeaderEntity">
+        select
+        g.id as id,(select CONCAT(u.mobile,'(',FROM_BASE64(u.nickname),')') from nideshop_user u where u.id = g.user_id) as  username,
+        g.realname as realname,
+        g.mobile as mobile,
+        g.status as status,
+        g.remarks as remarks
+        from gb_leader g
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+        delete from gb_leader``
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteBatch">
+        delete from gb_leader where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+                  #{id}
+        </foreach>
+    </delete>
+    <!--<insert id="save" parameterType="com.platform.entity.GbLeaderEntity" useGeneratedKeys="true" keyProperty="id">-->
+		<!--insert into gb_leader(-->
+          <!--`user_id`,-->
+          <!--`realname`,-->
+          <!--`mobile`,-->
+          <!--`pic`,-->
+          <!--`register_time`,-->
+          <!--`modify_time`,-->
+          <!--`status`,-->
+          <!--`remarks`        )-->
+		<!--values(-->
+          <!--#{userId},-->
+          <!--#{realname},-->
+          <!--#{mobile},-->
+          <!--#{pic},-->
+          <!--now(),-->
+          <!--now(),-->
+          <!--0,-->
+          <!--#{remarks}         )-->
+	<!--</insert>-->
+
+
+    <update id="update" parameterType="com.platform.entity.GbLeaderEntity" >
+        update gb_leader
+        <set>
+            `modify_time` = now(),
+            `status` = #{status},
+            `remarks` = #{remarks},
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+    <select id="queryList" resultType="com.platform.entity.GbLeaderEntity">
+        select
+          `id`,
+        (select CONCAT(u.mobile,'(',FROM_BASE64(u.nickname),')') from nideshop_user u where u.id = g.user_id)  username,
+          `realname`,
+          `mobile`,
+        (select CONCAT(u.mobile,'(',merchant_name,')') from sys_user u where u.merchant_id = g.pic) pic,
+          `register_time`,
+          `modify_time`,
+          `status`,
+          `remarks`
+        from gb_leader g
+        WHERE 1=1
+        <if test="name != null and name.trim() != ''">
+            AND name LIKE concat('%',#{name},'%')
+        </if>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        select count(*) from gb_leader
+        WHERE 1=1
+        <if test="name != null and name.trim() != ''">
+            AND name LIKE concat('%',#{name},'%')
+        </if>
+    </select>
+</mapper>

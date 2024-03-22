@@ -1,0 +1,28 @@
+<view class="add-gbCoach">
+    <view class="add-form">
+        <view class="form-item">
+            <input class="input" bindinput="bindinputMobile" value="{{gbCoach.mobile}}" maxlength="15" type="number" placeholder="请填写手机号码"/>
+        </view>
+        <view class="second-line">
+            <input  type="digit" bindinput="bindinputCaptcha" value="{{gbCoach.captcha}}" name="captcha" placeholder="请输入验证码"/>
+            <button bindtap="countDownPassCode" disabled="{{disableGetMobileCode}}">{{getCodeButtonText}}</button>
+        </view>
+        <view class="form-item">
+            <input class="password" value="{{gbCoach.password}}" password bindinput="bindPasswordInput" placeholder="请输入密码"/>
+            <image class="clear" id="clear-password" wx:if="{{ password.length > 0 }}" src="/static/images/clear_input.png" catchtap="clearInput"></image>
+        </view>
+        <view class="form-item">
+            <input class="password" value="{{gbCoach.confirmPassword}}" password bindinput="bindConfirmPasswordInput" placeholder="请确认密码"/>
+            <image class="clear" id="clear-confirm-password" wx:if="{{ confirmPassword.length > 0 }}" src="/static/images/clear_input.png" catchtap="clearInput"></image>
+        </view>
+        <view class="form-item">
+            <input class="input" bindinput="bindinputPic" value="{{gbCoach.pic}}" maxlength="15" type="number" placeholder="请填写市场负责人ID"/>
+        </view>
+
+    </view>
+
+    <view class="btns">
+        <button class="save"  bindtap="savegbCoach"  >立即入驻</button>
+    </view>
+
+</view>
